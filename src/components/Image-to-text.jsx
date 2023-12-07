@@ -1,62 +1,108 @@
 import { useEffect, useState } from 'react'
 import { createWorker } from 'tesseract.js'
+import CopyToClipboard from 'react-copy-to-clipboard';
+import "../scss/image-to-text.scss"
 export const ImageToText = () => {
-    const [ocr, setOcr] = useState("");
-    const [imageData, setImageData] = useState(null);
-    const [file,setFile]=useState(null)
-    const [progress,setProgress]=useState(0)
-    const [read,setRead]=useState(false)
-    useEffect(() => {
-      if (read==true) {
-        (async () => {
-          const worker = await createWorker("eng",1,{
-            logger: m =>setProgress(parseInt(m.progress*100)),
-          });
-          const { data: { text } } = await worker.recognize(imageData);
-          console.log(text);
-          setOcr(text)
-          await worker.terminate();
-        })();
-      }
-    }, [imageData,read])
-  
-    const handleImageChange=(e)=> {
-      const file = e.target.files[0];
-      if (!file) return;
-      const objectUrl=URL.createObjectURL(file)
-      setImageData(objectUrl)
-      setFile(file)
+  const [ocr, setOcr] = useState("");
+  const [imageData, setImageData] = useState(null);
+  const [file, setFile] = useState(null)
+  const [progress, setProgress] = useState(0)
+  const [read, setRead] = useState(false)
+  const [textCopy, setTextCopy] = useState("")
+  const [isCopied, setCopied] = useState(false)
+  const [csvData, setCsvData] = useState([]);
+  const [fileName, setFileName] = useState(null)
+  useEffect(() => {
+    if (read == true) {
+      (async () => {
+        const worker = await createWorker("eng", 1, {
+          logger: m => setProgress(parseInt(m.progress * 100)),
+        });
+        const { data: { text } } = await worker.recognize(imageData);
+        console.log(text);
+        setOcr(text)
+        await worker.terminate();
+      })();
     }
-  
-    const handleRead=()=>{
-      setRead(true)
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-    }
-    return (
-      <>
-        <div>
-          <p>Choose an Image</p>
-          <input
-            type="file"
-            name=""
-            id=""
-            onChange={handleImageChange}
-            accept="image/*"
-          />
-        </div>
-        <div className="display-flex">
-          <img src={imageData} alt="" srcset="" />
-        </div>
-        {progress < 100 && progress > 0 && <div>
-          <div className="progress-label">Progress ({progress}%)</div>
-          <div className="progress-bar">
-            <div className="progress" style={{width: `${progress}%`}} ></div>
-          </div>
-        </div>}
-        <span style={{ whiteSpace: "pre-line" }}>{ocr}</span>
-        <button onClick={handleRead}>Read</button>
-      </>
-    )
+  }, [imageData, read])
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileName(file.name)
+    const objectUrl = URL.createObjectURL(file)
+    setImageData(objectUrl)
+    setFile(file)
   }
+
+  const handleRead = () => {
+    setRead(true)
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+  }
+
+  const handleTextCopy = () => {
+    setCopied(true)
+  }
+  const handleDownload = () => {
+    const csvHeaders = ['Text'];
+    const csvRows = [{ Text: textCopy }];
+    setCopied(true);
+    setCsvData([csvHeaders, ...csvRows]);
+  }
+  const handleRemoveImage = () => {
+    setImageData(null)
+  }
+  const handleStarOver=()=>{
+    setOcr("")
+    setImageData(null)
+  }
+  return (
+    <>
+    {ocr===""&& (
+      <div className='file-upload'>
+        <button className="file-upload-btn" type='button'>Add Image</button>
+        <div className="image-upload-wrap">
+          <input type="file" className="file-upload-input" accept='image.*' onChange={handleImageChange} />
+          <div className="drag-text">
+            <h3>Drag and drop a file or select add Image</h3>
+          </div>
+        </div>
+      </div>
+    )}
+      {imageData !== null && (
+        <>
+          <div className="grid-column">
+            <div className="file-uploaded">
+              <div className="image-display-flex">
+                <img src={imageData} alt="" />
+              </div>
+              <div className="button-remove">
+                <button className='remove-image' onClick={handleRemoveImage}>Remove {fileName}</button>
+              </div>
+            </div>
+            {ocr!=="" && (
+              <div className='display-text'>
+                <textarea name="" id="" cols="20" rows="10" value={ocr} onChange={(e) => setTextCopy(e.target.value)}>
+                </textarea> <br />
+                <CopyToClipboard text={ocr} onCopy={handleTextCopy}>
+                  <button>Copy to Clipboard</button>
+                </CopyToClipboard>
+                {isCopied ? <span style={{ color: 'green' }}> Copied!</span> : null}
+              </div>
+            )}
+          </div>
+          <div className="button-read-image">
+          {progress < 100 && progress > 0 && (<span>{progress} %</span>)}
+            {ocr===""?(
+              <button onClick={handleRead}>Read Text From Image</button>
+            ):(
+              <button onClick={handleStarOver}>Start Over</button>
+            )}
+          </div>
+        </>
+      )}
+    </>
+  )
+}
 

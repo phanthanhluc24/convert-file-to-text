@@ -1,0 +1,25 @@
+.header{
+    .header-ul{
+        display: flex;
+        .link{
+            text-decoration: none;
+            color: black;
+            .header-ul-li{
+                list-style: none;
+                margin-left: 20px;
+                background-color: #fff;
+                height: 40px;
+                width: 150px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 4px;
+            }&:hover{
+                cursor: pointer;
+            }
+            .background-color{
+                background-color: rgb(164, 226, 239);
+            }
+        }
+    }
+}
