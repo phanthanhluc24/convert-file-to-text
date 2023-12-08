@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createWorker } from 'tesseract.js'
 import CopyToClipboard from 'react-copy-to-clipboard';
 import "../scss/image-to-text.scss"
+import { useNavigate } from 'react-router-dom';
 export const ImageToText = () => {
   const [ocr, setOcr] = useState("");
   const [imageData, setImageData] = useState(null);
@@ -10,7 +11,6 @@ export const ImageToText = () => {
   const [read, setRead] = useState(false)
   const [textCopy, setTextCopy] = useState("")
   const [isCopied, setCopied] = useState(false)
-  const [csvData, setCsvData] = useState([]);
   const [fileName, setFileName] = useState(null)
   useEffect(() => {
     if (read == true) {
@@ -44,18 +44,13 @@ export const ImageToText = () => {
   const handleTextCopy = () => {
     setCopied(true)
   }
-  const handleDownload = () => {
-    const csvHeaders = ['Text'];
-    const csvRows = [{ Text: textCopy }];
-    setCopied(true);
-    setCsvData([csvHeaders, ...csvRows]);
-  }
   const handleRemoveImage = () => {
     setImageData(null)
   }
   const handleStarOver=()=>{
     setOcr("")
     setImageData(null)
+    window.location.reload()
   }
   return (
     <>

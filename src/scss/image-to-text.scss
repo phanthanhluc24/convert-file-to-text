@@ -58,6 +58,52 @@ body{
         border: 4px dashed #ffffff;
     }
 }
+.file-pdf-display{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 10px;
+    .pdf-file{
+        margin: 0 auto;
+        .worker-pdf{
+            width: 300px;
+            height: 350px;
+        }
+    }
+    .text-pdf-display{
+        margin: 0 auto;
+        textarea{
+            width: 500px;
+            height: 300px;
+            outline: none;
+            border: none;
+        }
+        button{
+            background-color: rgb(220, 192, 12);
+            outline: none;
+            border: none;
+            border-radius: 4px;
+            height: 40px;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: #fff;
+            padding-top: 10px;
+        }
+    }
+}
+.button-read-pdf{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    button{
+        height: 40px;
+        text-transform: uppercase;
+        border-radius: 4px;
+        background-color:rgb(220, 192, 12);
+        color: #fff;
+        border: none;
+        outline: none;
+    }
+}
 .grid-column{
     display: grid;
     grid-template-columns: 1fr 1fr;
